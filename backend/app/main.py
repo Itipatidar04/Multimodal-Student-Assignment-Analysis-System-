@@ -1,6 +1,6 @@
 '''Creates the FastAPI app
 Adds CORS middleware so the React frontend (running on port 5173) can call this API without being blocked
-Registers all 4 routers: auth, courses, assignments, submissions
+Registers all 5 routers: auth, courses, assignments, submissions, admin
 Adds a /health endpoint (used later for Docker health checks)
 Adds a /docs endpoint — FastAPI auto-generates a beautiful interactive API docs page here
 '''
@@ -8,7 +8,7 @@ Adds a /docs endpoint — FastAPI auto-generates a beautiful interactive API doc
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routes import auth, courses, assignments, submissions
+from app.routes import admin, auth, assignments, courses, submissions
 
 app = FastAPI(
     title="IIPS Assignment Analysis System",
@@ -30,6 +30,7 @@ app.include_router(auth.router)
 app.include_router(courses.router)
 app.include_router(assignments.router)
 app.include_router(submissions.router)
+app.include_router(admin.router)
 
 
 # ── Health check ─────────────────────────────────────────────────────────────

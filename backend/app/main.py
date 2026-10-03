@@ -8,7 +8,7 @@ Adds a /docs endpoint — FastAPI auto-generates a beautiful interactive API doc
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routes import auth, courses, assignments, submissions
+from app.routes import auth, courses, assignments, submissions, admin
 
 app = FastAPI(
     title="IIPS Assignment Analysis System",
@@ -30,6 +30,7 @@ app.include_router(auth.router)
 app.include_router(courses.router)
 app.include_router(assignments.router)
 app.include_router(submissions.router)
+app.include_router(admin.router)
 
 
 # ── Health check ─────────────────────────────────────────────────────────────

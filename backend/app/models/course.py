@@ -23,7 +23,7 @@ class CourseResponse(BaseModel):
     name: str
     code: str
     description: Optional[str] = None
-    faculty_id: str
+    faculty_id: Optional[str] = None
     semester: Optional[str] = None
     academic_year: Optional[str] = None
     created_at: datetime

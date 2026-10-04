@@ -57,6 +57,14 @@ async def create_course(
     return CourseResponse(**result.data[0])
 
 
+@router.get("/catalog", response_model=List[CourseResponse])
+async def list_course_catalog(current_user: dict = Depends(get_current_user)):
+    """All subjects in the system — used by students to find and enroll in a course."""
+    db = get_db()
+    res = db.table("courses").select("*").order("name").execute()
+    return [CourseResponse(**c) for c in res.data]
+
+
 @router.get("", response_model=List[CourseResponse])
 async def list_courses(current_user: dict = Depends(get_current_user)):
     db = get_db()

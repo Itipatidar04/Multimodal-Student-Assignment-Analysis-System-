@@ -24,8 +24,10 @@ export interface Assignment {
   total_marks: number
   submission_modes: string[]
   questions: { id: string; text: string; max_marks: number; order_index: number }[]
-  rubrics: { id: string; criteria: string; max_score: number }[]
+  rubrics: { id: string; criterion: string; weight: number }[]
   created_at: string
+  course_name?: string | null
+  course_code?: string | null
 }
 
 export interface Submission {
@@ -70,7 +72,7 @@ export const getEnrolledCourses = () =>
 
 /** Get ALL courses in the system (so student can browse & enroll) */
 export const getAllCourses = () =>
-  api.get<Course[]>('/courses').then(r => r.data)
+  api.get<Course[]>('/courses/catalog').then(r => r.data)
 
 /** Enroll the current student in a course */
 export const enrollInCourse = (courseId: string) =>

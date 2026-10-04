@@ -166,17 +166,26 @@ export default function SubmissionPage() {
         formData.append('file', videoFile)
       }
 
-      await api.post('/submissions', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
+      await api.post('/submissions', formData)
 
       setSubmitted(true)
     } catch (err: any) {
-      const msg = err?.response?.data?.detail || 'Submission failed. Please try again.'
-      setSubmitError(msg)
-    } finally {
-      setSubmitting(false)
-    }
+      console.error("Submission error:", err)
+
+          const detail = err?.response?.data?.detail
+
+          let msg = "Submission failed. Please try again."
+
+          if (typeof detail === "string") {
+              msg = detail
+          } else if (Array.isArray(detail)) {
+              msg = detail
+                  .map((item: any) => item?.msg || JSON.stringify(item))
+                  .join(", ")
+          }
+
+          setSubmitError(msg)
+      }
   }
 
   // ── Success screen ───────────────────────────────────────

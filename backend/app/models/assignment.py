@@ -65,3 +65,5 @@ class AssignmentResponse(BaseModel):
     created_at: datetime
     questions: List[QuestionResponse] = []
     rubrics: List[RubricResponse] = []
+    course_name: Optional[str] = None
+    course_code: Optional[str] = None

@@ -36,16 +36,19 @@ export default function StudentDashboard() {
   const fetchData = async () => {
     setLoading(true)
     try {
-      const [assignRes, subRes, enrolledRes, allRes] = await Promise.all([
+      const [assignRes, enrolledRes, allRes] = await Promise.all([
         getAssignments(),
-        getSubmissions(),
         getEnrolledCourses(),
         getAllCourses(),
       ])
       setAssignments(assignRes)
-      setSubmissions(subRes)
       setEnrolledCourses(enrolledRes)
       setAllCourses(allRes)
+      try {
+        setSubmissions(await getSubmissions())
+      } catch {
+        setSubmissions([])
+      }
     } catch {
       setError('Failed to load data. Please refresh.')
     } finally {
@@ -222,6 +225,11 @@ export default function StudentDashboard() {
 
                     {/* Title */}
                     <div>
+                      {(assignment.course_code || assignment.course_name) && (
+                        <div style={{ fontSize: 12, color: '#64748b', fontWeight: 600, marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.4 }}>
+                          {assignment.course_code}{assignment.course_name ? ` · ${assignment.course_name}` : ''}
+                        </div>
+                      )}
                       <h3 style={{ fontSize: 16, fontWeight: 600, color: '#1e293b' }}>
                         {assignment.title}
                       </h3>

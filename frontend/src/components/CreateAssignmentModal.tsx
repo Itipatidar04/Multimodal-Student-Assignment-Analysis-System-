@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus, Trash2, FileText, Mic, Video } from 'lucide-react'
 import Modal from './Modal'
 import { createAssignment, type Assignment, type Course } from '../api/faculty'
@@ -10,8 +10,8 @@ interface Question {
 }
 
 interface Rubric {
-  criteria: string
-  max_score: number
+  criterion: string
+  weight: number
 }
 
 interface Props {
@@ -34,8 +34,15 @@ export default function CreateAssignmentModal({ isOpen, onClose, onCreated, cour
   const [loading, setLoading]         = useState(false)
   const [error, setError]             = useState('')
 
+  useEffect(() => {
+    if (isOpen) {
+      setCourseId(defaultCourseId || (courses.length === 1 ? courses[0].id : ''))
+    }
+  }, [isOpen, defaultCourseId, courses])
+
   const reset = () => {
-    setCourseId(defaultCourseId || ''); setTitle(''); setDescription('')
+    setCourseId(defaultCourseId || (courses.length === 1 ? courses[0].id : ''))
+    setTitle(''); setDescription('')
     setDeadline(''); setTotalMarks(100); setModes(['text'])
     setQuestions([]); setRubrics([]); setError('')
   }
@@ -52,7 +59,7 @@ export default function CreateAssignmentModal({ isOpen, onClose, onCreated, cour
     setQuestions(q => q.map((item, idx) => idx === i ? { ...item, [field]: val } : item))
 
   // Rubrics
-  const addRubric = () => setRubrics(r => [...r, { criteria: '', max_score: 10 }])
+  const addRubric = () => setRubrics(r => [...r, { criterion: '', weight: 25 }])
   const removeRubric = (i: number) => setRubrics(r => r.filter((_, idx) => idx !== i))
   const updateRubric = (i: number, field: keyof Rubric, val: string | number) =>
     setRubrics(r => r.map((item, idx) => idx === i ? { ...item, [field]: val } : item))
@@ -68,11 +75,15 @@ export default function CreateAssignmentModal({ isOpen, onClose, onCreated, cour
         course_id: courseId,
         title: title.trim(),
         description: description.trim() || undefined,
-        deadline: deadline || null,
+        deadline: deadline ? new Date(deadline).toISOString() : null,
         total_marks: totalMarks,
         submission_modes: modes,
-        questions: questions.length > 0 ? questions : undefined,
-        rubrics: rubrics.length > 0 ? rubrics : undefined,
+        questions: questions.filter(q => q.text.trim()).length > 0
+          ? questions.filter(q => q.text.trim())
+          : undefined,
+        rubrics: rubrics.filter(r => r.criterion.trim()).length > 0
+          ? rubrics.filter(r => r.criterion.trim())
+          : undefined,
       })
       onCreated(created)
       reset(); onClose()
@@ -183,10 +194,10 @@ export default function CreateAssignmentModal({ isOpen, onClose, onCreated, cour
           </div>
           {rubrics.map((r, i) => (
             <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 100px auto', gap: 8, marginBottom: 8, alignItems: 'start' }}>
-              <input value={r.criteria} onChange={e => updateRubric(i, 'criteria', e.target.value)}
-                placeholder={`e.g. Content accuracy`} />
-              <input type="number" value={r.max_score} onChange={e => updateRubric(i, 'max_score', Number(e.target.value))}
-                placeholder="Score" min={1} />
+              <input value={r.criterion} onChange={e => updateRubric(i, 'criterion', e.target.value)}
+                placeholder={`e.g. Concept Understanding`} />
+              <input type="number" value={r.weight} onChange={e => updateRubric(i, 'weight', Number(e.target.value))}
+                placeholder="Weight %" min={1} max={100} />
               <button type="button" className="btn btn-ghost btn-sm" onClick={() => removeRubric(i)}
                 style={{ color: '#ef4444' }}><Trash2 size={13} /></button>
             </div>

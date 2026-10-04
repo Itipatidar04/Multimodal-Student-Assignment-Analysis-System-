@@ -35,7 +35,7 @@ export default function CreateCourseModal({ isOpen, onClose, onCreated }: Props)
         code: code.trim().toUpperCase(),
         description: description.trim() || undefined,
         semester: semester.trim() || undefined,
-        year: year || undefined,
+        academic_year: year ? String(year) : undefined,
       })
       onCreated(created)
       reset()

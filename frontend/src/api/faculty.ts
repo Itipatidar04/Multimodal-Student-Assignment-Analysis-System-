@@ -170,9 +170,10 @@ export const getEvaluation = (submissionId: string) =>
   api.get<Evaluation>(`/evaluations/${submissionId}`).then(r => r.data)
 
 export const triggerEvaluation = (submissionId: string) =>
-  api.post<Evaluation>(`/evaluations/${submissionId}/evaluate`).then(r => r.data)
+  api.post<Evaluation>(`/evaluations/${submissionId}`).then(r => r.data)
 
 export const reviewEvaluation = (
   submissionId: string,
   data: { faculty_score: number; faculty_notes?: string; finalize?: boolean }
-) => api.patch<Evaluation>(`/evaluations/${submissionId}/review`, data).then(r => r.data)
+) => api.post<Evaluation>(`/evaluations/${submissionId}/review`, data).then(r => r.data)
+

@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
 
@@ -5,6 +6,7 @@ import { useAuth } from './context/AuthContext'
 import Login from './pages/Login'
 import StudentDashboard from './pages/student/StudentDashboard'
 import SubmissionPage from './pages/student/SubmissionPage'
+import EvaluationResult from './pages/student/EvaluationResult'
 import FacultyDashboard from './pages/faculty/FacultyDashboard'
 import AdminDashboard from './pages/admin/AdminDashboard'
 
@@ -15,9 +17,10 @@ function ProtectedRoute({
   children,
   allowedRole,
 }: {
-  children: JSX.Element
+  children: ReactElement
   allowedRole: 'student' | 'faculty' | 'admin'
 }) {
+
   const { user, isLoading } = useAuth()
 
   if (isLoading) {
@@ -73,6 +76,11 @@ export default function App() {
       <Route path="/student/submit/:assignmentId" element={
         <ProtectedRoute allowedRole="student">
           <SubmissionPage />
+        </ProtectedRoute>
+      } />
+      <Route path="/student/result/:submissionId" element={
+        <ProtectedRoute allowedRole="student">
+          <EvaluationResult />
         </ProtectedRoute>
       } />
 

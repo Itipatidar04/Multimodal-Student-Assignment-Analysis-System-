@@ -9,6 +9,7 @@ import Layout from '../../components/Layout'
 import { getEvaluation, type Evaluation } from '../../api/student'
 import api from '../../api/client'
 
+
 interface Submission {
   id: string
   assignment_id: string
@@ -41,7 +42,7 @@ export default function EvaluationResult() {
     const load = async () => {
       try {
         const [subRes, evalRes] = await Promise.all([
-          api.get<Submission>(`/submissions/${submissionId}`),
+          api.get<Submission>(`/submissions/${submissionId}/result`),
           getEvaluation(submissionId).catch(() => null),
         ])
         setSubmission(subRes.data)
@@ -58,13 +59,7 @@ export default function EvaluationResult() {
     load()
   }, [submissionId])
 
-  const getScoreColor = (score: number | null, max: number) => {
-    if (score === null) return '#94a3b8'
-    const pct = (score / max) * 100
-    if (pct >= 80) return '#10b981'
-    if (pct >= 60) return '#f59e0b'
-    return '#ef4444'
-  }
+
 
   const getScoreLabel = (score: number | null, max: number) => {
     if (score === null) return 'N/A'
@@ -103,9 +98,9 @@ export default function EvaluationResult() {
 
   const totalMarks = assignment?.total_marks || 100
   const finalScore = evaluation?.final_score ?? evaluation?.ai_score ?? null
-  const scoreColor = getScoreColor(finalScore, totalMarks)
   const scoreLabel = getScoreLabel(finalScore, totalMarks)
   const scorePct = finalScore !== null ? Math.round((finalScore / totalMarks) * 100) : null
+
 
   const isPending = !evaluation || evaluation.status === 'pending'
   const isEvaluated = evaluation && evaluation.status !== 'pending'

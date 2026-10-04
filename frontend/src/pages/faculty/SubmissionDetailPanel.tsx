@@ -10,13 +10,8 @@ import {
   getEvaluation, triggerEvaluation, reviewEvaluation,
 } from '../../api/faculty'
 
-interface StudentInfo {
-  id: string
-  name?: string
-  email?: string
-}
-
 interface Props {
+
   submission: Submission
   assignment: Assignment | undefined
   onClose: () => void

@@ -9,6 +9,7 @@ import Layout from '../../components/Layout'
 import CreateCourseModal from '../../components/CreateCourseModal'
 import CreateAssignmentModal from '../../components/CreateAssignmentModal'
 import CourseDetailPanel from './CourseDetailPanel'
+import SubmissionDetailPanel from './SubmissionDetailPanel'
 import {
   getCourses, getAssignments, getSubmissions,
   type Course, type Assignment, type Submission,
@@ -31,10 +32,12 @@ export default function FacultyDashboard() {
   const [createAssignmentCourseId, setCreateAssignmentCourseId] = useState<string | undefined>()
 
   // Detail panel
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
+  const [selectedCourse, setSelectedCourse]         = useState<Course | null>(null)
+  const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null)
 
   // Submissions filter
   const [filterAssignmentId, setFilterAssignmentId] = useState<string>('all')
+
 
   useEffect(() => {
     fetchData()
@@ -402,7 +405,12 @@ export default function FacultyDashboard() {
                 const assignment = getAssignmentForSubmission(s.assignment_id)
                 const course = assignment ? getCourseForAssignment(assignment.course_id) : null
                 return (
-                  <div key={s.id} className="card" style={{ padding: '16px 20px' }}>
+                  <div
+                    key={s.id}
+                    className="card card-hover"
+                    style={{ padding: '16px 20px', cursor: 'pointer' }}
+                    onClick={() => setSelectedSubmission(s)}
+                  >
                     <div className="flex-between" style={{ marginBottom: 8 }}>
                       <div style={{ flex: 1 }}>
                         {assignment && (
@@ -459,7 +467,14 @@ export default function FacultyDashboard() {
                         {s.file_size_bytes && <span className="badge badge-grey">{formatSize(s.file_size_bytes)}</span>}
                       </div>
                     )}
+
+                    <div className="flex-between" style={{ marginTop: 12, paddingTop: 10, borderTop: '1px solid #f1f5f9' }}>
+                      <span style={{ fontSize: 12, color: 'var(--accent, #9b87c4)', fontWeight: 600 }}>
+                        Click to review submission & AI score →
+                      </span>
+                    </div>
                   </div>
+
                 )
               })}
             </div>
@@ -490,6 +505,17 @@ export default function FacultyDashboard() {
           onCreateAssignment={(courseId) => openCreateAssignment(courseId)}
         />
       )}
+
+      {/* ── Submission detail panel ─────────────────────────────── */}
+      {selectedSubmission && (
+        <SubmissionDetailPanel
+          submission={selectedSubmission}
+          assignment={getAssignmentForSubmission(selectedSubmission.assignment_id)}
+          onClose={() => setSelectedSubmission(null)}
+          onEvaluated={() => fetchData()}
+        />
+      )}
     </Layout>
   )
 }
+

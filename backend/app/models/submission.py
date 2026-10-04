@@ -15,3 +15,11 @@ class SubmissionResponse(BaseModel):
     extracted_text: Optional[str] = None
     status: str
     submitted_at: datetime
+
+    ai_score: Optional[float] = None
+    faculty_score: Optional[float] = None
+    faculty_feedback: Optional[str] = None
+    result_status: str = "PENDING"
+    reviewed_by: Optional[str] = None
+    reviewed_at: Optional[datetime] = None
+    published_at: Optional[datetime] = None

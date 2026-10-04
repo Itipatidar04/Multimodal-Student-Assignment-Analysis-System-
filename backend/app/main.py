@@ -8,7 +8,8 @@ Adds a /docs endpoint — FastAPI auto-generates a beautiful interactive API doc
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routes import admin, auth, assignments, courses, submissions
+from app.routes import admin, auth, assignments, courses, submissions, evaluations
+from app.routes import programs
 
 app = FastAPI(
     title="IIPS Assignment Analysis System",
@@ -19,7 +20,7 @@ app = FastAPI(
 # ── CORS: allow the React frontend to talk to this API ──────────────────────
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:8501", "*"],
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:8501"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -27,9 +28,11 @@ app.add_middleware(
 
 # ── Register all routers ─────────────────────────────────────────────────────
 app.include_router(auth.router)
+app.include_router(programs.router)
 app.include_router(courses.router)
 app.include_router(assignments.router)
 app.include_router(submissions.router)
+app.include_router(evaluations.router)
 app.include_router(admin.router)
 
 

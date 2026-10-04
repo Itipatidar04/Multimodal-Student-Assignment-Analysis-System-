@@ -1,4 +1,4 @@
-#Login & Register Endpoints
+# Login & Register Endpoints
 from fastapi import APIRouter, HTTPException, Depends, status
 from app.models.user import UserCreate, UserLogin, UserResponse, Token
 from app.services.auth_service import hash_password, verify_password, create_access_token
@@ -23,8 +23,33 @@ async def register(body: UserCreate):
         "password_hash": hash_password(body.password),
         "role": body.role,
     }
+
+    # Store program + semester for students
+    if body.role == "student" and body.program_id:
+        new_user["program_id"] = body.program_id
+        new_user["current_semester"] = body.current_semester or 1
+
     result = db.table("users").insert(new_user).execute()
     user = result.data[0]
+
+    # Auto-enroll student in ALL subjects of their program + semester
+    if body.role == "student" and body.program_id and body.current_semester:
+        subjects = (
+            db.table("courses")
+            .select("id")
+            .eq("program_id", body.program_id)
+            .eq("semester", str(body.current_semester))
+            .execute()
+        )
+        if subjects.data:
+            enrollments = [
+                {"course_id": s["id"], "student_id": user["id"]}
+                for s in subjects.data
+            ]
+            try:
+                db.table("enrollments").insert(enrollments).execute()
+            except Exception:
+                pass  # Enrollment is non-critical — don't fail registration
 
     token = create_access_token(
         {"sub": user["id"], "email": user["email"], "role": user["role"], "name": user["name"]}

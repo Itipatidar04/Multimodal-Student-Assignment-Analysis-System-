@@ -26,6 +26,8 @@ export interface Assignment {
   questions: Question[]
   rubrics: Rubric[]
   created_at: string
+  course_name?: string | null
+  course_code?: string | null
 }
 
 export interface Question {
@@ -39,8 +41,9 @@ export interface Question {
 export interface Rubric {
   id: string
   assignment_id: string
-  criteria: string
-  max_score: number
+  criterion: string
+  description: string | null
+  weight: number
 }
 
 export interface Submission {
@@ -89,7 +92,7 @@ export const createCourse = (data: {
   code: string
   description?: string
   semester?: string
-  year?: number
+  academic_year?: string
 }) => api.post<Course>('/courses', data).then(r => r.data)
 
 export const getCourse = (id: string) =>
@@ -114,7 +117,7 @@ export const createAssignment = (data: {
   total_marks: number
   submission_modes: string[]
   questions?: { text: string; max_marks: number; order_index: number }[]
-  rubrics?: { criteria: string; max_score: number }[]
+  rubrics?: { criterion: string; weight: number }[]
 }) => api.post<Assignment>('/assignments', data).then(r => r.data)
 
 // ─── Submission APIs ──────────────────────────────────────────────

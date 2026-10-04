@@ -11,9 +11,6 @@ import axios from 'axios'
 // ── Create axios instance pointing to our FastAPI backend ──
 const api = axios.create({
   baseURL: 'http://localhost:8000',
-  headers: {
-    'Content-Type': 'application/json',
-  },
 })
 
 // ── Request interceptor ──

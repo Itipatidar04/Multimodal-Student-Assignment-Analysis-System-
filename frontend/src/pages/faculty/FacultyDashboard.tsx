@@ -43,14 +43,17 @@ export default function FacultyDashboard() {
   const fetchData = async () => {
     setLoading(true)
     try {
-      const [c, a, s] = await Promise.all([
+      const [c, a] = await Promise.all([
         getCourses(),
         getAssignments(),
-        getSubmissions(),
       ])
       setCourses(c)
       setAssignments(a)
-      setSubmissions(s)
+      try {
+        setSubmissions(await getSubmissions())
+      } catch {
+        setSubmissions([])
+      }
     } catch {
       setError('Failed to load data. Please refresh.')
     } finally {
@@ -65,6 +68,7 @@ export default function FacultyDashboard() {
 
   const handleAssignmentCreated = (assignment: Assignment) => {
     setAssignments(prev => [assignment, ...prev])
+    setActiveTab('assignments')
   }
 
   const openCreateAssignment = (courseId?: string) => {
